@@ -15,19 +15,19 @@ txtrst=$(tput sgr0)             # back to notmal
 
 
 if [ "$INPUT" = "-c" ];then
-  echo  CREATE
+  #CREATE
   find . -type f  | grep -v .crc32| while read FILE 
   do  
     if [ -f "${FILE}.crc32" ] 
     then
-      echo "Found crc32-file for $FILE - nothing to do"
+      echo "$FILE crc32-file found - nothing to do"
     else
       echo  $(crc32 "$FILE") > "${FILE}.crc32"
       echo "${FILE}.crc32 written"
     fi
   done
 elif [ "$INPUT" = "-v" ];then
-  echo VERIFY
+  # VERIFY
   find . -type f | grep -v .crc32| while read FILE 
   do  
     if [ -f "${FILE}.crc32" ]; then
