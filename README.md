@@ -31,7 +31,7 @@ With -v these can be verified. It shows errors if the checksum don't match the p
 mediacenter@mediacenter:~/bla$ ~/Downloads/compile/checksummer/checksummer.sh -v
 File ./reallyimportantfiles/20141224_175410.JPG is OK
 File ./reallyimportantfiles/20141224_102534.JPG is OK
-File ./reallyimportantfiles/20141224_184628.JPG is corrupt OLDHASH(bla) != NEWHASH(d068ed1a)
+File ./reallyimportantfiles/20141224_184628.JPG is corrupt OLDHASH(d432ed3b) != NEWHASH(d068ed1a)
 File ./reallyimportantfiles/20141224_201829.JPG is OK
 File ./reallyimportantfiles/20141224_195845.JPG is OK
 File ./reallyimportantfiles/20141224_102514.JPG is OK
@@ -41,3 +41,5 @@ File ./file1 is OK
 File ./file2 is OK
 </code></pre>
 
+
+I use it in a cron-job which checks periodic all my pictures. If a picture is corrupt it can be restored from a backup.
