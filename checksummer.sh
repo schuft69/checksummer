@@ -1,49 +1,76 @@
 #!/bin/bash
 # Steffen Tilsch 2015
 
-if [ ! $1 ];then
+function help {
   echo  "$0 -c     creates crc32-checksum files"
   echo  "$0 -v     verifies crc32-checksum files"
   exit 1
+}
+
+if [ ! $1 ];then
+  help
 fi
+
 
 INPUT=$1
+LOGFILE=/tmp/$(basename $0).log
+ERRFILE=/tmp/$(basename $0).err
+cat /dev/null > $ERRFILE
+DATE=$(date +"%Y.%m.%d_%H:%M:%S")
+echo $DATE >> $LOGFILE
 
-red=$(tput setaf 1)             # red
-green=$(tput setaf 2)           # green
-txtrst=$(tput sgr0)             # back to notmal
+# check if crc32 is installed
+command -v crc32 >/dev/null 2>&1 || { 
+  echo "crc32 is not installed. Please install first." | tee -a $ERRFILE
+  exit 1 
+}
 
+#red    $(tput setaf 1)
+#green  $(tput setaf 2)
+#normal $(tput sgr0)    
 
+#CREATE
 if [ "$INPUT" = "-c" ];then
-  #CREATE
-  find . -type f  | grep -v .crc32| while read FILE 
+  find . -type f | grep -v .crc32 | sort | while read FILE_WITH_PATH
   do  
-    if [ -f "${FILE}.crc32" ] 
+    FPATH=${FILE_WITH_PATH%/*}
+    FNAME=${FILE_WITH_PATH##*/}
+    CRCPATH="${FPATH}/.${FNAME}.crc32"
+    if [ -f "${CRCPATH}" ] 
     then
-      echo "$FILE crc32-file found - nothing to do"
+      echo "$FILE_WITH_PATH crc32-file found - nothing to do" | tee -a $LOGFILE
     else
-      echo  $(crc32 "$FILE") > "${FILE}.crc32"
-      echo "${FILE}.crc32 written"
+      echo $(crc32 "$FILE_WITH_PATH") > $CRCPATH
+      echo $DATE >> $CRCPATH
+      echo "$CRCPATH written" | tee -a $LOGFILE
     fi
   done
+
+
+# VERIFY
 elif [ "$INPUT" = "-v" ];then
-  # VERIFY
-  find . -type f | grep -v .crc32| while read FILE 
+  find . -type f | grep -v .crc32 | sort | while read FILE_WITH_PATH
   do  
-    if [ -f "${FILE}.crc32" ]; then
-      NEWHASH=$(crc32 "$FILE")
-      OLDHASH=$(cat "${FILE}.crc32")
+    FPATH=${FILE_WITH_PATH%/*}
+    FNAME=${FILE_WITH_PATH##*/}
+    CRCPATH="${FPATH}/.${FNAME}.crc32"
+    if [ -f "$CRCPATH" ]; then
+      NEWHASH=$(crc32 "$FILE_WITH_PATH")
+      OLDHASH=$(head -1 "$CRCPATH")
       if [ "$NEWHASH" = "$OLDHASH" ];then
-        echo -e "File $FILE is $(tput setaf 2)OK $(tput sgr0)"
+        echo -e "File $FILE_WITH_PATH is $(tput setaf 2)OK $(tput sgr0)"
+        echo -e "File $FILE_WITH_PATH is OK" >> $LOGFILE
       else 
-        echo "$(tput setaf 1)File $FILE is corrupt OLDHASH($OLDHASH) != NEWHASH($NEWHASH)$(tput sgr0)"
+        echo "$(tput setaf 1)File $FILE_WITH_PATH is corrupt oldhash($OLDHASH) != newhash($NEWHASH)$(tput sgr0)"  
+        echo "File $FILE_WITH_PATH is corrupt oldhash != newhash($NEWHASH)"  |tee -a $LOGFILE $ERRFILE   >/dev/null
       fi
     else
-      echo "no ${FILE}.crc32 found!"
+      echo "$(tput setaf 1)File $CRCPATH missing!$(tput sgr0)" 
+      echo "File $CRCPATH missing!" |tee -a $LOGFILE $ERRFILE   >/dev/null
     fi
   done
+
+# All other inputs
 else
-  echo bla
+  help | tee -a $LOGFILE $ERRFILE
 fi
-
-
