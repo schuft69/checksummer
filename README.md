@@ -19,8 +19,7 @@ $ checksummer.sh
 ./checksummer.sh -v       #verifies crc32-checksum files
 </code></pre>
 
-It fill search all files in the current and all subdirectories. It will create (-c)
-.crc32 for each file if not already present. 
+It will search all files in the current and all subdirectories. It will create (-c) .crc32 for each file if not already present. 
 <pre><code>
 $ checksummer.sh -c
 ./file1.crc32 written
@@ -33,9 +32,7 @@ $ checksummer.sh -c
 ./reallyimportantfiles/20141224_102514.JPG.crc32 written
 ./reallyimportantfiles/20141224_174921.JPG.crc32 written
 ./reallyimportantfiles/20141224_182419.JPG.crc32 written
-</code></pre>
 
-<pre><code>
 $ ls -a reallyimportantfiles/
 20141201_121336.JPG
 .20141201_121336.JPG.crc32
