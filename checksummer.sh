@@ -21,7 +21,7 @@ echo $DATE >> $LOGFILE
 
 # check if crc32 is installed
 command -v crc32 >/dev/null 2>&1 || { 
-  echo "crc32 is not installed. Please install first." | tee -a $ERRFILE
+  echo "crc32 is not installed. Please install first." | tee -a "$ERRFILE"
   exit 1 
 }
 
@@ -38,11 +38,11 @@ if [ "$INPUT" = "-c" ];then
     CRCPATH="${FPATH}/.${FNAME}.crc32"
     if [ -f "${CRCPATH}" ] 
     then
-      echo "$FILE_WITH_PATH crc32-file found - nothing to do" | tee -a $LOGFILE
+      echo "$FILE_WITH_PATH crc32-file found - nothing to do" | tee -a "$LOGFILE"
     else
-      echo $(crc32 "$FILE_WITH_PATH") > $CRCPATH
-      echo $DATE >> $CRCPATH
-      echo "$CRCPATH written" | tee -a $LOGFILE
+      crc32 "$FILE_WITH_PATH" > "$CRCPATH"
+      echo $DATE >> "$CRCPATH"
+      echo "$CRCPATH written" | tee -a "$LOGFILE"
     fi
   done
 
@@ -59,18 +59,18 @@ elif [ "$INPUT" = "-v" ];then
       OLDHASH=$(head -1 "$CRCPATH")
       if [ "$NEWHASH" = "$OLDHASH" ];then
         echo -e "File $FILE_WITH_PATH is $(tput setaf 2)OK $(tput sgr0)"
-        echo -e "File $FILE_WITH_PATH is OK" >> $LOGFILE
+        echo -e "File $FILE_WITH_PATH is OK" >> "$LOGFILE"
       else 
         echo "$(tput setaf 1)File $FILE_WITH_PATH is corrupt oldhash($OLDHASH) != newhash($NEWHASH)$(tput sgr0)"  
-        echo "File $FILE_WITH_PATH is corrupt oldhash != newhash($NEWHASH)"  |tee -a $LOGFILE $ERRFILE   >/dev/null
+        echo "File $FILE_WITH_PATH is corrupt oldhash != newhash($NEWHASH)"  |tee -a "$LOGFILE" "$ERRFILE"   >/dev/null
       fi
     else
       echo "$(tput setaf 1)File $CRCPATH missing!$(tput sgr0)" 
-      echo "File $CRCPATH missing!" |tee -a $LOGFILE $ERRFILE   >/dev/null
+      echo "File $CRCPATH missing!" |tee -a "$LOGFILE" "$ERRFILE"   >/dev/null
     fi
   done
 
 # All other inputs
 else
-  help | tee -a $LOGFILE $ERRFILE
+  help | tee -a "$LOGFILE" "$ERRFILE"
 fi
