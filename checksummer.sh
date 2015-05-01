@@ -7,17 +7,17 @@ function help {
   exit 1
 }
 
-if [ ! $1 ];then
+if [ ! "$1" ];then
   help
 fi
 
 
 INPUT=$1
-LOGFILE=/tmp/$(basename $0).log
-ERRFILE=/tmp/$(basename $0).err
-cat /dev/null > $ERRFILE
+LOGFILE=/tmp/$(basename "$0").log
+ERRFILE=/tmp/$(basename "$0").err
+cat /dev/null > "$ERRFILE"
 DATE=$(date +"%Y.%m.%d_%H:%M:%S")
-echo $DATE >> $LOGFILE
+echo $DATE >> "$LOGFILE"
 
 # check if crc32 is installed
 command -v crc32 >/dev/null 2>&1 || { 
